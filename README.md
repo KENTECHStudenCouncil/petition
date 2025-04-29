@@ -84,6 +84,17 @@
   <h2 class="text-3xl font-bold mb-6">관리자 페이지 (준비중)</h2>
 </section>
 <script>
+
+function showPage(page) {
+    const pages = ['main', 'list', 'detail', 'write', 'mypage', 'admin'];
+    pages.forEach(id => {
+      const section = document.getElementById(`page-${id}`);
+      if (section) section.classList.add('hidden');
+    });
+    const show = document.getElementById(`page-${page}`);
+    if (show) show.classList.remove('hidden');
+  }
+
 // Supabase 연결
 const supabaseUrl = 'https://ybbpzwvigqgleywnwkij.supabase.co'; // 본인 프로젝트 URL
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliYnB6d3ZpZ3FnbGV5d253a2lqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU5Mjk1NzUsImV4cCI6MjA2MTUwNTU3NX0.3JF0NvkBLyJZkFtcpOvtYkA8CfUnp_CKuAoI13CyJxg';               // 본인 Public Key
