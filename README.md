@@ -63,8 +63,8 @@
 
 <!-- 스크립트 시작 -->
 <script>
-const supabaseUrl = 'https://your-project-id.supabase.co'; // ← 본인의 URL로 교체
-const supabaseKey = 'your-anon-key'; // ← 본인의 Public Key로 교체
+const supabaseUrl = 'https://your-project-id.supabase.co](https://ybbpzwvigqgleywnwkij.supabase.co'; // ← 본인의 URL로 교체
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliYnB6d3ZpZ3FnbGV5d253a2lqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU5Mjk1NzUsImV4cCI6MjA2MTUwNTU3NX0.3JF0NvkBLyJZkFtcpOvtYkA8CfUnp_CKuAoI13CyJxg'; // ← 본인의 Public Key로 교체
 const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 let currentPetition = null;
