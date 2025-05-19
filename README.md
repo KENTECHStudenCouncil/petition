@@ -23,23 +23,23 @@
 
 <!-- 메인 페이지 -->
 <main id="page-main" class="container mx-auto p-6">
-  <h2 class="text-4xl font-bold mb-6">🔥 HOT 캠원</h2>
+  <h2 class="text-4xl font-bold mb-6">🔥 HOT 청원</h2>
   <div id="hot-petitions" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10"></div>
 
-  <h2 class="text-3xl font-bold mb-4">📜 경우 캠원</h2>
+  <h2 class="text-3xl font-bold mb-4">📜 청원 목록 </h2>
   <ul id="recent-petitions" class="divide-y divide-gray-300"></ul>
 </main>
 
 <!-- 전체 청원 목록 -->
 <section id="page-list" class="hidden container mx-auto p-6">
-  <h2 class="text-3xl font-bold mb-6">전체 캠원 목록</h2>
+  <h2 class="text-3xl font-bold mb-6">전체 청원 목록</h2>
   <ul id="all-petitions" class="divide-y divide-gray-300"></ul>
 </section>
 
 <!-- 청원 상세 페이지 -->
 <section id="page-detail" class="hidden container mx-auto p-6">
-  <h2 id="detail-title" class="text-3xl font-bold mb-4">캠원 제목</h2>
-  <p id="detail-description" class="text-gray-700 mb-6">캠원 내용</p>
+  <h2 id="detail-title" class="text-3xl font-bold mb-4">청원 제목</h2>
+  <p id="detail-description" class="text-gray-700 mb-6">청원 내용</p>
   <p id="detail-support" class="text-green-600 font-semibold mb-6">동의 0명</p>
 
   <div class="bg-gray-50 p-4 rounded mb-6">
@@ -52,9 +52,9 @@
 
 <!-- 청원 작성 페이지 -->
 <section id="page-write" class="hidden container mx-auto p-6">
-  <h2 class="text-3xl font-bold mb-6">캠원 작성하기</h2>
-  <input id="petition-title" type="text" class="w-full border p-2 mb-4 rounded" placeholder="캠원 제목">
-  <textarea id="petition-content" class="w-full border p-2 mb-4 rounded" placeholder="캠원 내용"></textarea>
+  <h2 class="text-3xl font-bold mb-6">청원 작성하기</h2>
+  <input id="petition-title" type="text" class="w-full border p-2 mb-4 rounded" placeholder="청원 제목">
+  <textarea id="petition-content" class="w-full border p-2 mb-4 rounded" placeholder="청원 내용"></textarea>
   <button onclick="submitPetition()" class="bg-blue-700 text-white px-6 py-2 rounded">제출하기</button>
 </section>
 
