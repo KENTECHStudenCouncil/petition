@@ -66,7 +66,7 @@
 
 <script>
 const supabaseUrl = 'https://ybbpzwvigqgleywnwkij.supabase.co';
-const supabaseKey = 'YOUR_SUPABASE_PUBLIC_KEY';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliYnB6d3ZpZ3FnbGV5d253a2lqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU5Mjk1NzUsImV4cCI6MjA2MTUwNTU3NX0.3JF0NvkBLyJZkFtcpOvtYkA8CfUnp_CKuAoI13CyJxg';
 const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 let currentPetition = null;
@@ -96,6 +96,12 @@ async function submitPetition() {
   loadRecentPetitions();
   loadAllPetitions();
   loadHotPetitions();
+  
+  if (error) {
+  console.error('청원 등록 실패:', error); // 이 줄 추가
+  return alert('청원 등록 실패: ' + error.message);
+}
+
 }
 
 async function loadRecentPetitions() {
