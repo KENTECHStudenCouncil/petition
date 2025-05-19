@@ -14,10 +14,18 @@
 
 <script>
 let currentPetition = null;
+let supabase = null;
 
-const supabaseUrl = 'https://ybbpzwvigqgleywnwkij.supabase.co](https://ybbpzwvigqgleywnwkij.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliYnB6d3ZpZ3FnbGV5d253a2lqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU5Mjk1NzUsImV4cCI6MjA2MTUwNTU3NX0.3JF0NvkBLyJZkFtcpOvtYkA8CfUnp_CKuAoI13CyJxg'; // 여기에 실제 Supabase anon key 입력
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+window.onload = async () => {
+  const supabaseUrl = 'https://ybbpzwvigqgleywnwkij.supabase.co';
+  const supabaseKey = 'YOUR_SUPABASE_PUBLIC_KEY'; // 여기에 Supabase anon key 입력
+  supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+  await loadRecentPetitions();
+  await loadAllPetitions();
+  await loadHotPetitions();
+  await loadUnapprovedPetitions();
+};
 
 function showPage(page) {
   const pages = ['main', 'list', 'detail', 'write', 'admin'];
@@ -41,9 +49,9 @@ async function submitPetition() {
   if (error) return alert('청원 등록 실패: ' + error.message);
   alert('청원이 등록되었습니다. 관리자의 승인을 기다립니다.');
   showPage('main');
-  loadRecentPetitions();
-  loadAllPetitions();
-  loadHotPetitions();
+  await loadRecentPetitions();
+  await loadAllPetitions();
+  await loadHotPetitions();
 }
 
 async function loadRecentPetitions() {
@@ -113,7 +121,7 @@ async function submitSupport() {
   const { error: uploadError } = await supabase.storage.from('signatures').upload(filename, file);
   if (uploadError) return alert('파일 업로드 실패: ' + uploadError.message);
 
-  const fileUrl = `${supabaseUrl}/storage/v1/object/public/signatures/${filename}`;
+  const fileUrl = `https://ybbpzwvigqgleywnwkij.supabase.co/storage/v1/object/public/signatures/${filename}`;
   const { error } = await supabase.from('supports').insert([
     { petition_id: currentPetition.id, name, file_url: fileUrl }
   ]);
@@ -126,9 +134,9 @@ async function submitSupport() {
 
   alert('서명 완료!');
   showPage('main');
-  loadRecentPetitions();
-  loadAllPetitions();
-  loadHotPetitions();
+  await loadRecentPetitions();
+  await loadAllPetitions();
+  await loadHotPetitions();
 }
 
 async function loadUnapprovedPetitions() {
@@ -150,15 +158,8 @@ async function approvePetition(id) {
   const { error } = await supabase.from('petitions').update({ approved: true }).eq('id', id);
   if (error) return alert('승인 실패: ' + error.message);
   alert('승인 완료!');
-  loadUnapprovedPetitions();
+  await loadUnapprovedPetitions();
 }
-
-window.onload = () => {
-  loadRecentPetitions();
-  loadAllPetitions();
-  loadHotPetitions();
-  loadUnapprovedPetitions();
-};
 </script>
 
 <footer class="bg-gray-800 text-white text-center p-4 mt-12">© 2025 Kentech Petitions</footer>
