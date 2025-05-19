@@ -17,30 +17,29 @@
     <button onclick="showPage('main')">홈</button>
     <button onclick="showPage('list')">전체 청원</button>
     <button onclick="showPage('write')">청원 작성</button>
-    <button onclick="showPage('mypage')">마이페이지</button>
     <button onclick="showPage('admin')">관리자</button>
   </nav>
 </header>
 
 <!-- 메인 페이지 -->
 <main id="page-main" class="container mx-auto p-6">
-  <h2 class="text-4xl font-bold mb-6">🔥 HOT 청원</h2>
+  <h2 class="text-4xl font-bold mb-6">🔥 HOT 캠원</h2>
   <div id="hot-petitions" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10"></div>
 
-  <h2 class="text-3xl font-bold mb-4">📜 최근 청원</h2>
+  <h2 class="text-3xl font-bold mb-4">📜 경우 캠원</h2>
   <ul id="recent-petitions" class="divide-y divide-gray-300"></ul>
 </main>
 
 <!-- 전체 청원 목록 -->
 <section id="page-list" class="hidden container mx-auto p-6">
-  <h2 class="text-3xl font-bold mb-6">전체 청원 목록</h2>
+  <h2 class="text-3xl font-bold mb-6">전체 캠원 목록</h2>
   <ul id="all-petitions" class="divide-y divide-gray-300"></ul>
 </section>
 
 <!-- 청원 상세 페이지 -->
 <section id="page-detail" class="hidden container mx-auto p-6">
-  <h2 id="detail-title" class="text-3xl font-bold mb-4">청원 제목</h2>
-  <p id="detail-description" class="text-gray-700 mb-6">청원 내용</p>
+  <h2 id="detail-title" class="text-3xl font-bold mb-4">캠원 제목</h2>
+  <p id="detail-description" class="text-gray-700 mb-6">캠원 내용</p>
   <p id="detail-support" class="text-green-600 font-semibold mb-6">동의 0명</p>
 
   <div class="bg-gray-50 p-4 rounded mb-6">
@@ -53,24 +52,27 @@
 
 <!-- 청원 작성 페이지 -->
 <section id="page-write" class="hidden container mx-auto p-6">
-  <h2 class="text-3xl font-bold mb-6">청원 작성하기</h2>
-  <input id="petition-title" type="text" class="w-full border p-2 mb-4 rounded" placeholder="청원 제목">
-  <textarea id="petition-content" class="w-full border p-2 mb-4 rounded" placeholder="청원 내용"></textarea>
+  <h2 class="text-3xl font-bold mb-6">캠원 작성하기</h2>
+  <input id="petition-title" type="text" class="w-full border p-2 mb-4 rounded" placeholder="캠원 제목">
+  <textarea id="petition-content" class="w-full border p-2 mb-4 rounded" placeholder="캠원 내용"></textarea>
   <button onclick="submitPetition()" class="bg-blue-700 text-white px-6 py-2 rounded">제출하기</button>
 </section>
 
-<!-- 마이페이지 & 관리자 페이지 생략 (추후 구현) -->
+<!-- 관리자 페이지 -->
+<section id="page-admin" class="hidden container mx-auto p-6">
+  <h2 class="text-3xl font-bold mb-6">관리자 페이지</h2>
+  <ul id="unapproved-petitions" class="divide-y divide-gray-300"></ul>
+</section>
 
-<!-- 스크립트 시작 -->
 <script>
-const supabaseUrl = 'https://your-project-id.supabase.co](https://ybbpzwvigqgleywnwkij.supabase.co'; // ← 본인의 URL로 교체
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliYnB6d3ZpZ3FnbGV5d253a2lqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU5Mjk1NzUsImV4cCI6MjA2MTUwNTU3NX0.3JF0NvkBLyJZkFtcpOvtYkA8CfUnp_CKuAoI13CyJxg'; // ← 본인의 Public Key로 교체
+const supabaseUrl = 'https://ybbpzwvigqgleywnwkij.supabase.co';
+const supabaseKey = 'YOUR_SUPABASE_PUBLIC_KEY';
 const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 let currentPetition = null;
 
 function showPage(page) {
-  const pages = ['main', 'list', 'detail', 'write'];
+  const pages = ['main', 'list', 'detail', 'write', 'admin'];
   pages.forEach(id => {
     const el = document.getElementById(`page-${id}`);
     if (el) el.classList.add('hidden');
@@ -84,19 +86,22 @@ async function submitPetition() {
   const content = document.getElementById('petition-content').value;
   if (!title || !content) return alert('모든 항목을 입력해주세요.');
 
-  const { error } = await supabase.from('petitions').insert([{ title, description: content, support_count: 0 }]);
-  if (error) return alert('청원 등록 실패: ' + error.message);
+  const { error } = await supabase.from('petitions').insert([
+    { title, description: content, support_count: 0, approved: false }
+  ]);
 
-  alert('청원이 등록되었습니다.');
+  if (error) return alert('청원 등록 실패: ' + error.message);
+  alert('청원이 등록되었습니다. 관리자의 승인을 기다립니다.');
   showPage('main');
   loadRecentPetitions();
   loadAllPetitions();
+  loadHotPetitions();
 }
 
 async function loadRecentPetitions() {
-  const { data } = await supabase
-    .from('petitions')
+  const { data } = await supabase.from('petitions')
     .select('*')
+    .eq('approved', true)
     .order('created_at', { ascending: false })
     .limit(10);
 
@@ -112,7 +117,11 @@ async function loadRecentPetitions() {
 }
 
 async function loadAllPetitions() {
-  const { data } = await supabase.from('petitions').select('*').order('created_at', { ascending: false });
+  const { data } = await supabase.from('petitions')
+    .select('*')
+    .eq('approved', true)
+    .order('created_at', { ascending: false });
+
   const list = document.getElementById('all-petitions');
   list.innerHTML = '';
   data?.forEach(p => {
@@ -121,6 +130,24 @@ async function loadAllPetitions() {
     li.innerHTML = `<span>${p.title}</span><span>동의 ${p.support_count}명</span>`;
     li.onclick = () => openDetail(p);
     list.appendChild(li);
+  });
+}
+
+async function loadHotPetitions() {
+  const { data } = await supabase.from('petitions')
+    .select('*')
+    .eq('approved', true)
+    .order('support_count', { ascending: false })
+    .limit(3);
+
+  const container = document.getElementById('hot-petitions');
+  container.innerHTML = '';
+  data?.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'bg-white p-4 rounded shadow cursor-pointer hover:bg-blue-50';
+    div.innerHTML = `<h3 class="text-xl font-bold mb-2">${p.title}</h3><p class="text-gray-600">동의 ${p.support_count}명</p>`;
+    div.onclick = () => openDetail(p);
+    container.appendChild(div);
   });
 }
 
@@ -137,13 +164,14 @@ async function submitSupport() {
   const file = document.getElementById('support-file').files[0];
   if (!name || !file) return alert('이름과 서명 파일을 모두 제출해주세요.');
 
-  const filename = `${Date.now()}_${file.name}`;
+  const filename = `${Date.now()}_${encodeURIComponent(file.name)}`;
   const { error: uploadError } = await supabase.storage.from('signatures').upload(filename, file);
   if (uploadError) return alert('파일 업로드 실패: ' + uploadError.message);
 
   const fileUrl = `${supabaseUrl}/storage/v1/object/public/signatures/${filename}`;
-
-  const { error } = await supabase.from('supports').insert([{ petition_id: currentPetition.id, name, file_url: fileUrl }]);
+  const { error } = await supabase.from('supports').insert([
+    { petition_id: currentPetition.id, name, file_url: fileUrl }
+  ]);
   if (error) return alert('서명 실패: ' + error.message);
 
   await supabase
@@ -155,11 +183,37 @@ async function submitSupport() {
   showPage('main');
   loadRecentPetitions();
   loadAllPetitions();
+  loadHotPetitions();
+}
+
+async function loadUnapprovedPetitions() {
+  const { data } = await supabase.from('petitions')
+    .select('*')
+    .eq('approved', false)
+    .order('created_at', { ascending: false });
+
+  const list = document.getElementById('unapproved-petitions');
+  list.innerHTML = '';
+  data?.forEach(p => {
+    const li = document.createElement('li');
+    li.className = 'py-4 flex justify-between items-center';
+    li.innerHTML = `<span>${p.title}</span><button class="bg-green-600 text-white px-4 py-1 rounded" onclick="approvePetition(${p.id})">승인</button>`;
+    list.appendChild(li);
+  });
+}
+
+async function approvePetition(id) {
+  const { error } = await supabase.from('petitions').update({ approved: true }).eq('id', id);
+  if (error) return alert('승인 실패: ' + error.message);
+  alert('승인 완료!');
+  loadUnapprovedPetitions();
 }
 
 window.onload = () => {
   loadRecentPetitions();
   loadAllPetitions();
+  loadHotPetitions();
+  loadUnapprovedPetitions();
 };
 </script>
 
