@@ -4,14 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kentech Petitions</title>
-  <script src="https://cdn.tailwindcss.com](https://ybbpzwvigqgleywnwkij.supabase.co"></script>
-  <script src="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliYnB6d3ZpZ3FnbGV5d253a2lqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU5Mjk1NzUsImV4cCI6MjA2MTUwNTU3NX0.3JF0NvkBLyJZkFtcpOvtYkA8CfUnp_CKuAoI13CyJxg"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>body { font-family: 'Noto Sans KR', sans-serif; }</style>
-  <script>
-    const supabaseUrl = 'https://ybbpzwvigqgleywnwkij.supabase.co';
-    const supabaseKey = 'YOUR_SUPABASE_PUBLIC_KEY'; // 실제 키로 교체
-    const supabase = window.supabase = supabase.createClient(supabaseUrl, supabaseKey);
-  </script>
 </head>
 <body class="bg-gray-100 text-gray-900">
 
@@ -19,6 +14,11 @@
 
 <script>
 let currentPetition = null;
+
+// Supabase 초기화는 반드시 스크립트가 로드된 후 실행되어야 함
+const supabaseUrl = 'https://ybbpzwvigqgleywnwkij.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliYnB6d3ZpZ3FnbGV5d253a2lqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU5Mjk1NzUsImV4cCI6MjA2MTUwNTU3NX0.3JF0NvkBLyJZkFtcpOvtYkA8CfUnp_CKuAoI13CyJxg'; // ← 여기에 Supabase anon key 입력
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 function showPage(page) {
   const pages = ['main', 'list', 'detail', 'write', 'admin'];
