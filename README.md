@@ -9,7 +9,17 @@
   <style>body { font-family: 'Noto Sans KR', sans-serif; }</style>
 </head>
 <body class="bg-gray-100 text-gray-900">
-
+  
+<header class="bg-blue-700 text-white p-4 flex justify-between items-center">
+  <h1 class="text-2xl font-bold">Kentech Petitions</h1>
+  <nav class="space-x-4">
+    <button onclick="showPage('main')">홈</button>
+    <button onclick="showPage('list')">전체 청원</button>
+    <button onclick="showPage('write')">청원 작성</button>
+    <button onclick="showPage('admin')">관리자</button>
+  </nav>
+</header>
+  
 <section id="page-main" class="container mx-auto p-6">
   <h2 class="text-4xl font-bold mb-6">🔥 HOT 청원</h2>
   <div id="hot-petitions" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10"></div>
@@ -26,6 +36,13 @@
 <section id="page-admin" class="hidden container mx-auto p-6">
   <h2 class="text-3xl font-bold mb-6">관리자 승인 목록</h2>
   <ul id="unapproved-petitions" class="divide-y divide-gray-300"></ul>
+</section>
+
+<section id="page-write" class="hidden container mx-auto p-6">
+  <h2 class="text-3xl font-bold mb-6">청원 작성하기</h2>
+  <input id="petition-title" type="text" class="w-full border p-2 mb-4 rounded" placeholder="청원 제목">
+  <textarea id="petition-content" class="w-full border p-2 mb-4 rounded" placeholder="청원 내용" rows="6"></textarea>
+  <button onclick="submitPetition()" class="bg-blue-700 text-white px-6 py-2 rounded">제출하기</button>
 </section>
 
 <script>
