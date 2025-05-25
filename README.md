@@ -101,15 +101,21 @@ async function submitPetition() {
   if (!title || !content) return alert('모든 항목을 입력해주세요.');
 
   const { error } = await supabaseClient.from('petitions').insert([
-    { title, description: content, support_count: 0, approved: false }
-  ]);
+  { title, description: content, support_count: 0, approved: false }
+]);
 
-  if (error) return alert('청원 등록 실패: ' + error.message);
-  alert('청원이 등록되었습니다. 관리자의 승인을 기다립니다.');
-  showPage('main');
-  await loadRecentPetitions();
-  await loadAllPetitions();
-  await loadHotPetitions();
+if (error) return alert('청원 등록 실패: ' + error.message);
+
+// ✅ 바로 관리자 목록과 홈 목록 갱신
+await loadRecentPetitions();
+await loadAllPetitions();
+await loadUnapprovedPetitions();
+await loadHotPetitions();
+
+// ✅ 등록 후 바로 관리자에게 승인 요청으로 이동하거나 메시지
+alert('청원이 등록되었습니다. 관리자의 승인을 기다립니다.');
+showPage('main'); // 또는 'admin'으로 보내도 OK
+
 }
 
 async function loadRecentPetitions() {
