@@ -304,9 +304,9 @@ async function adminLogin() {
   const email = document.getElementById('login-email').value;
   const password = document.getElementById('login-password').value;
 
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email,
-    password,
+  const { user, session, error } = await supabaseClient.auth.signIn({
+    email: email,
+    password: password,
   });
 
   if (error) {
@@ -314,15 +314,16 @@ async function adminLogin() {
     return;
   }
 
-  // 관리자 이메일 확인
+  // 이메일이 관리자 계정인지 확인
   if (email !== 'admin@kentech.ac.kr') {
     alert('관리자만 접근할 수 있습니다.');
     return;
   }
 
   alert('로그인 성공! 관리자 페이지로 이동합니다.');
-  showPage('admin'); // 관리자 페이지 보여줌
-  await loadUnapprovedPetitions(); // 승인할 청원 불러오기
+
+  showPage('admin');
+  await loadUnapprovedPetitions(); // 승인할 청원 목록 불러오기
 }
 
 
