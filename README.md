@@ -16,7 +16,7 @@
     <button onclick="showPage('main')">홈</button>
     <button onclick="showPage('list')">전체 청원</button>
     <button onclick="showPage('write')">청원 작성</button>
-    <button onclick="showPage('admin')">관리자</button>
+    <button onclick="showPage('login')">관리자</button>
   </nav>
 </header>
   
@@ -37,6 +37,14 @@
   <h2 class="text-3xl font-bold mb-6">관리자 승인 목록</h2>
   <ul id="unapproved-petitions" class="divide-y divide-gray-300"></ul>
 </section>
+
+<section id="page-login" class="hidden container mx-auto p-6">
+  <h2 class="text-3xl font-bold mb-6">관리자 로그인</h2>
+  <input id="login-email" type="email" class="w-full border p-2 mb-2 rounded" placeholder="이메일">
+  <input id="login-password" type="password" class="w-full border p-2 mb-4 rounded" placeholder="비밀번호">
+  <button onclick="adminLogin()" class="bg-blue-700 text-white px-6 py-2 rounded">로그인</button>
+</section>
+
 
 <section id="page-list" class="hidden container mx-auto p-6">
   <h2 class="text-3xl font-bold mb-6">전체 청원 목록</h2>
@@ -291,6 +299,32 @@ async function approvePetition(id) {
   // ✅ HOT 청원에도 반영
   await loadHotPetitions();
 }
+  
+async function adminLogin() {
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    alert('로그인 실패: ' + error.message);
+    return;
+  }
+
+  // 관리자 이메일 확인
+  if (email !== 'admin@kentech.ac.kr') {
+    alert('관리자만 접근할 수 있습니다.');
+    return;
+  }
+
+  alert('로그인 성공! 관리자 페이지로 이동합니다.');
+  showPage('admin'); // 관리자 페이지 보여줌
+  await loadUnapprovedPetitions(); // 승인할 청원 불러오기
+}
+
 
 </script>
 
