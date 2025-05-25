@@ -38,6 +38,16 @@
   <ul id="unapproved-petitions" class="divide-y divide-gray-300"></ul>
 </section>
 
+<section id="page-list" class="hidden container mx-auto p-6">
+  <h2 class="text-3xl font-bold mb-6">전체 청원 목록</h2>
+  <ul id="all-petitions" class="divide-y divide-gray-300"></ul>
+</section>
+
+<section id="page-admin" class="hidden container mx-auto p-6">
+  <h2 class="text-3xl font-bold mb-6">관리자 승인 목록</h2>
+  <ul id="unapproved-petitions" class="divide-y divide-gray-300"></ul>
+</section>
+
 <section id="page-write" class="hidden container mx-auto p-6">
   <h2 class="text-3xl font-bold mb-6">청원 작성하기</h2>
   <input id="petition-title" type="text" class="w-full border p-2 mb-4 rounded" placeholder="청원 제목">
@@ -203,9 +213,15 @@ async function submitSupport() {
   if (error) return alert('서명 실패: ' + error.message);
 
   await supabaseClient
-    .from('petitions')
-    .update({ support_count: currentPetition.support_count + 1 })
-    .eq('id', currentPetition.id);
+  .from('petitions')
+  .update({ support_count: currentPetition.support_count + 1 })
+  .eq('id', currentPetition.id);
+
+  // ✅ 수동으로 메모리 객체 갱신
+  currentPetition.support_count += 1;
+
+  // ✅ 상세 페이지에 실시간 반영
+  document.getElementById('detail-support').textContent = `동의 ${currentPetition.support_count}명`;
 
   alert('서명 완료!');
   showPage('main');
