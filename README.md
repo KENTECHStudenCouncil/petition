@@ -253,11 +253,28 @@ async function loadUnapprovedPetitions() {
 }
 
 async function approvePetition(id) {
-  const { error } = await supabaseClient.from('petitions').update({ approved: true }).eq('id', id);
-  if (error) return alert('승인 실패: ' + error.message);
+  const { error } = await supabaseClient
+    .from('petitions')
+    .update({ approved: true })
+    .eq('id', id);
+
+  if (error) {
+    console.error(error);
+    return alert('승인 실패: ' + error.message);
+  }
+
   alert('승인 완료!');
+
+  // ✅ 승인 목록에서 제거
   await loadUnapprovedPetitions();
+
+  // ✅ 전체 청원 목록에 반영
+  await loadAllPetitions();
+
+  // ✅ HOT 청원에도 반영
+  await loadHotPetitions();
 }
+
 </script>
 
 <footer class="bg-gray-800 text-white text-center p-4 mt-12">© 2025 Kentech Petitions</footer>
