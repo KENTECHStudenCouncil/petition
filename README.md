@@ -314,10 +314,12 @@ async function adminLogin() {
     return;
   }
 
+  // ✅ 관리자 이메일 체크 삭제됨!
   alert('로그인 성공! 관리자 페이지로 이동합니다.');
   showPage('admin');
-  await loadUnapprovedPetitions(); // 승인 대기 청원 로드
+  await loadUnapprovedPetitions(); // 승인 대기 청원 불러오기
 }
+
 
 
 </script>
