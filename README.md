@@ -206,7 +206,8 @@ async function submitSupport() {
   }
 
   // 고유 파일명 생성
-  const filename = `${Date.now()}_${encodeURIComponent(file.name)}`;
+  const sanitizedName = file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
+  const filename = `${Date.now()}_${sanitizedName}`;
 
   // 파일 업로드
   const { error: uploadError } = await supabaseClient
