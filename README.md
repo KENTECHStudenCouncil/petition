@@ -155,6 +155,7 @@ async function loadHotPetitions() {
   const { data } = await supabaseClient.from('petitions')
     .select('*')
     .eq('approved', true)
+    .gte('support_count', 100)
     .order('support_count', { ascending: false })
     .limit(3);
   const container = document.getElementById('hot-petitions');
