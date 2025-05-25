@@ -182,13 +182,13 @@ function openDetail(petition) {
 async function submitSupport() {
   const studentId = document.getElementById('support-student-id').value.trim();
   const name = document.getElementById('support-name').value.trim();
-  const file = document.getElementById('support-file').files[0];
+  const file = document.getElementById('support-file').files[0]; // ← 누락되어 있었음
 
   if (!studentId || !name || !file) {
     return alert('학번, 이름, 서명 파일을 모두 제출해주세요.');
   }
 
-  // 중복 확인: 같은 청원에 동일한 학번+이름이 존재하는지
+  // 중복 확인
   const { data: existing, error: fetchError } = await supabaseClient
     .from('supports')
     .select('*')
@@ -197,7 +197,7 @@ async function submitSupport() {
     .eq('name', name);
 
   if (fetchError) {
-    console.error(fetchError);
+    console.error('🔍 중복 확인 실패:', fetchError);
     return alert('중복 확인 중 오류가 발생했습니다.');
   }
 
@@ -205,13 +205,23 @@ async function submitSupport() {
     return alert('이미 동의한 청원입니다.');
   }
 
+  // 고유 파일명 생성
   const filename = `${Date.now()}_${encodeURIComponent(file.name)}`;
-  const { error: uploadError } = await supabaseClient.storage.from('signatures').upload(filename, file);
 
-  if (uploadError) return alert('파일 업로드 실패: ' + uploadError.message);
+  // 파일 업로드
+  const { error: uploadError } = await supabaseClient
+    .storage
+    .from('signatures')
+    .upload(filename, file);
+
+  if (uploadError) {
+    console.error('📦 파일 업로드 실패:', uploadError); // 콘솔에 오류 출력
+    return alert('파일 업로드 실패: ' + uploadError.message);
+  }
 
   const fileUrl = `https://ybbpzwvigqgleywnwkij.supabase.co/storage/v1/object/public/signatures/${filename}`;
 
+  // 서명 정보 저장
   const { error } = await supabaseClient.from('supports').insert([{
     petition_id: currentPetition.id,
     student_id: studentId,
@@ -219,17 +229,19 @@ async function submitSupport() {
     file_url: fileUrl
   }]);
 
-  if (error) return alert('서명 실패: ' + error.message);
+  if (error) {
+    console.error('❌ 서명 저장 실패:', error);
+    return alert('서명 실패: ' + error.message);
+  }
 
+  // 동의 수 증가
   await supabaseClient
-  .from('petitions')
-  .update({ support_count: currentPetition.support_count + 1 })
-  .eq('id', currentPetition.id);
+    .from('petitions')
+    .update({ support_count: currentPetition.support_count + 1 })
+    .eq('id', currentPetition.id);
 
-  // ✅ 수동으로 메모리 객체 갱신
+  // 수동 갱신 + 화면 반영
   currentPetition.support_count += 1;
-
-  // ✅ 상세 페이지에 실시간 반영
   document.getElementById('detail-support').textContent = `동의 ${currentPetition.support_count}명`;
 
   alert('서명 완료!');
@@ -238,6 +250,7 @@ async function submitSupport() {
   await loadAllPetitions();
   await loadHotPetitions();
 }
+
 
 
 async function loadUnapprovedPetitions() {
