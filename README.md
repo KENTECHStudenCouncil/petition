@@ -152,12 +152,14 @@ async function loadAllPetitions() {
 }
 
 async function loadHotPetitions() {
-  const { data } = await supabaseClient.from('petitions')
+  const { data } = await supabaseClient
+    .from('petitions')
     .select('*')
     .eq('approved', true)
-    .gte('support_count', 100)
+    .gte('support_count', 100)  // ✅ 이 줄 꼭 포함
     .order('support_count', { ascending: false })
     .limit(3);
+
   const container = document.getElementById('hot-petitions');
   container.innerHTML = '';
   data?.forEach(p => {
