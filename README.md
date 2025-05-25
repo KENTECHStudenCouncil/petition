@@ -14,12 +14,13 @@
 
 <script>
 let currentPetition = null;
-let supabase = null;
+let supabaseClient = null;
 
 window.onload = async () => {
   const supabaseUrl = 'https://ybbpzwvigqgleywnwkij.supabase.co';
-  const supabaseKey = 'YOUR_SUPABASE_PUBLIC_KEY'; // 여기에 Supabase anon key 입력
-  supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliYnB6d3ZpZ3FnbGV5d253a2lqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU5Mjk1NzUsImV4cCI6MjA2MTUwNTU3NX0.3JF0NvkBLyJZkFtcpOvtYkA8CfUnp_CKuAoI13CyJxg';
+  supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+  console.log("✅ Supabase initialized", supabaseClient);
 
   await loadRecentPetitions();
   await loadAllPetitions();
@@ -42,7 +43,7 @@ async function submitPetition() {
   const content = document.getElementById('petition-content').value;
   if (!title || !content) return alert('모든 항목을 입력해주세요.');
 
-  const { error } = await supabase.from('petitions').insert([
+  const { error } = await supabaseClient.from('petitions').insert([
     { title, description: content, support_count: 0, approved: false }
   ]);
 
@@ -55,7 +56,7 @@ async function submitPetition() {
 }
 
 async function loadRecentPetitions() {
-  const { data } = await supabase.from('petitions')
+  const { data } = await supabaseClient.from('petitions')
     .select('*')
     .eq('approved', true)
     .order('created_at', { ascending: false })
@@ -72,7 +73,7 @@ async function loadRecentPetitions() {
 }
 
 async function loadAllPetitions() {
-  const { data } = await supabase.from('petitions')
+  const { data } = await supabaseClient.from('petitions')
     .select('*')
     .eq('approved', true)
     .order('created_at', { ascending: false });
@@ -88,7 +89,7 @@ async function loadAllPetitions() {
 }
 
 async function loadHotPetitions() {
-  const { data } = await supabase.from('petitions')
+  const { data } = await supabaseClient.from('petitions')
     .select('*')
     .eq('approved', true)
     .order('support_count', { ascending: false })
@@ -118,16 +119,16 @@ async function submitSupport() {
   if (!name || !file) return alert('이름과 서명 파일을 모두 제출해주세요.');
 
   const filename = `${Date.now()}_${encodeURIComponent(file.name)}`;
-  const { error: uploadError } = await supabase.storage.from('signatures').upload(filename, file);
+  const { error: uploadError } = await supabaseClient.storage.from('signatures').upload(filename, file);
   if (uploadError) return alert('파일 업로드 실패: ' + uploadError.message);
 
   const fileUrl = `https://ybbpzwvigqgleywnwkij.supabase.co/storage/v1/object/public/signatures/${filename}`;
-  const { error } = await supabase.from('supports').insert([
+  const { error } = await supabaseClient.from('supports').insert([
     { petition_id: currentPetition.id, name, file_url: fileUrl }
   ]);
   if (error) return alert('서명 실패: ' + error.message);
 
-  await supabase
+  await supabaseClient
     .from('petitions')
     .update({ support_count: currentPetition.support_count + 1 })
     .eq('id', currentPetition.id);
@@ -140,7 +141,7 @@ async function submitSupport() {
 }
 
 async function loadUnapprovedPetitions() {
-  const { data } = await supabase.from('petitions')
+  const { data } = await supabaseClient.from('petitions')
     .select('*')
     .eq('approved', false)
     .order('created_at', { ascending: false });
@@ -155,7 +156,7 @@ async function loadUnapprovedPetitions() {
 }
 
 async function approvePetition(id) {
-  const { error } = await supabase.from('petitions').update({ approved: true }).eq('id', id);
+  const { error } = await supabaseClient.from('petitions').update({ approved: true }).eq('id', id);
   if (error) return alert('승인 실패: ' + error.message);
   alert('승인 완료!');
   await loadUnapprovedPetitions();
