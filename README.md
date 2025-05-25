@@ -45,6 +45,20 @@
   <button onclick="submitPetition()" class="bg-blue-700 text-white px-6 py-2 rounded">제출하기</button>
 </section>
 
+<section id="page-detail" class="hidden container mx-auto p-6">
+  <h2 id="detail-title" class="text-3xl font-bold mb-4">청원 제목</h2>
+  <p id="detail-description" class="text-gray-700 mb-6">청원 내용</p>
+  <p id="detail-support" class="text-green-600 font-semibold mb-6">동의 0명</p>
+
+ <div class="bg-gray-50 p-4 rounded mb-6">
+  <h3 class="text-xl font-semibold mb-4">서명하기</h3>
+  <input id="support-student-id" type="text" class="w-full border p-2 mb-2 rounded" placeholder="학번 (예: 20241234)">
+  <input id="support-name" type="text" class="w-full border p-2 mb-2 rounded" placeholder="이름 (예: 홍길동)">
+  <input id="support-file" type="file" class="w-full mb-2">
+  <button onclick="submitSupport()" class="bg-green-600 text-white px-4 py-2 rounded">동의하기</button>
+</div>
+</section>
+
 <script>
 let currentPetition = null;
 let supabaseClient = null;
@@ -147,18 +161,45 @@ function openDetail(petition) {
 }
 
 async function submitSupport() {
-  const name = document.getElementById('support-name').value;
+  const studentId = document.getElementById('support-student-id').value.trim();
+  const name = document.getElementById('support-name').value.trim();
   const file = document.getElementById('support-file').files[0];
-  if (!name || !file) return alert('이름과 서명 파일을 모두 제출해주세요.');
+
+  if (!studentId || !name || !file) {
+    return alert('학번, 이름, 서명 파일을 모두 제출해주세요.');
+  }
+
+  // 중복 확인: 같은 청원에 동일한 학번+이름이 존재하는지
+  const { data: existing, error: fetchError } = await supabaseClient
+    .from('supports')
+    .select('*')
+    .eq('petition_id', currentPetition.id)
+    .eq('student_id', studentId)
+    .eq('name', name);
+
+  if (fetchError) {
+    console.error(fetchError);
+    return alert('중복 확인 중 오류가 발생했습니다.');
+  }
+
+  if (existing.length > 0) {
+    return alert('이미 동의한 청원입니다.');
+  }
 
   const filename = `${Date.now()}_${encodeURIComponent(file.name)}`;
   const { error: uploadError } = await supabaseClient.storage.from('signatures').upload(filename, file);
+
   if (uploadError) return alert('파일 업로드 실패: ' + uploadError.message);
 
   const fileUrl = `https://ybbpzwvigqgleywnwkij.supabase.co/storage/v1/object/public/signatures/${filename}`;
-  const { error } = await supabaseClient.from('supports').insert([
-    { petition_id: currentPetition.id, name, file_url: fileUrl }
-  ]);
+
+  const { error } = await supabaseClient.from('supports').insert([{
+    petition_id: currentPetition.id,
+    student_id: studentId,
+    name,
+    file_url: fileUrl
+  }]);
+
   if (error) return alert('서명 실패: ' + error.message);
 
   await supabaseClient
@@ -172,6 +213,7 @@ async function submitSupport() {
   await loadAllPetitions();
   await loadHotPetitions();
 }
+
 
 async function loadUnapprovedPetitions() {
   const { data } = await supabaseClient.from('petitions')
