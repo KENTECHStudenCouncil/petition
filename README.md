@@ -93,7 +93,7 @@ window.onload = async () => {
 };
 
 function showPage(page) {
-  const pages = ['main', 'list', 'detail', 'write', 'admin'];
+  const pages = ['main', 'list', 'detail', 'write', 'admin', 'login'];
   pages.forEach(id => {
     const el = document.getElementById(`page-${id}`);
     if (el) el.classList.add('hidden');
