@@ -10,7 +10,23 @@
 </head>
 <body class="bg-gray-100 text-gray-900">
 
-<!-- 이하 기존 내용 동일 -->
+<section id="page-main" class="container mx-auto p-6">
+  <h2 class="text-4xl font-bold mb-6">🔥 HOT 청원</h2>
+  <div id="hot-petitions" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10"></div>
+
+  <h2 class="text-3xl font-bold mb-4">📜 최근 청원</h2>
+  <ul id="recent-petitions" class="divide-y divide-gray-300"></ul>
+</section>
+
+<section id="page-list" class="hidden container mx-auto p-6">
+  <h2 class="text-3xl font-bold mb-6">전체 청원 목록</h2>
+  <ul id="all-petitions" class="divide-y divide-gray-300"></ul>
+</section>
+
+<section id="page-admin" class="hidden container mx-auto p-6">
+  <h2 class="text-3xl font-bold mb-6">관리자 승인 목록</h2>
+  <ul id="unapproved-petitions" class="divide-y divide-gray-300"></ul>
+</section>
 
 <script>
 let currentPetition = null;
