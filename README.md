@@ -71,7 +71,9 @@
   <h3 class="text-xl font-semibold mb-4">서명하기</h3>
   <input id="support-student-id" type="text" class="w-full border p-2 mb-2 rounded" placeholder="학번 (예: 20241234)">
   <input id="support-name" type="text" class="w-full border p-2 mb-2 rounded" placeholder="이름 (예: 홍길동)">
+<!--
   <input id="support-file" type="file" class="w-full mb-2">
+   -->
   <button onclick="submitSupport()" class="bg-green-600 text-white px-4 py-2 rounded">동의하기</button>
 </div>
 </section>
@@ -189,10 +191,13 @@ function openDetail(petition) {
 async function submitSupport() {
   const studentId = document.getElementById('support-student-id').value.trim();
   const name = document.getElementById('support-name').value.trim();
-  const file = document.getElementById('support-file').files[0]; // ← 누락되어 있었음
+  //const file = document.getElementById('support-file').files[0]; // ← 누락되어 있었음
 
-  if (!studentId || !name || !file) {
-    return alert('학번, 이름, 서명 파일을 모두 제출해주세요.');
+  //if (!studentId || !name || !file) {
+  //  return alert('학번, 이름, 서명 파일을 모두 제출해주세요.');
+  //}
+   if (!studentId || !name) {
+    return alert('학번, 이름을 모두 제출해주세요.');
   }
 
   // 중복 확인
